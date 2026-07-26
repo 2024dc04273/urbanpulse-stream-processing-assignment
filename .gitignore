@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.eggs/
+
+# Data / output artifacts (regenerated at runtime)
+data/parquet/
+data/output/
+*.log
+logs/
+
+# Spark / Flink runtime
+spark-warehouse/
+metastore_db/
+derby.log
+checkpoints/
+rocksdb/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.iml
+
+# Kafka container volumes
+kafka-data/
+
+# Reports build artifacts
+docs/*.pdf
+!docs/UrbanPulse_Report.pdf
+!docs/keep/*
+
+# PDF build helpers (large vendored libs / intermediate HTML)
+scripts/*.min.js
+docs/report.html
+docs/_docx_source.md
+docs/_diagram.html
+
+# Java/Kafka Streams build output
+src/task_b_kafka_streams/target/

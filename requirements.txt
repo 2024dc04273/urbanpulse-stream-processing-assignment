@@ -1,0 +1,21 @@
+# ---------------------------------------------------------------------------
+# UrbanPulse — Python dependencies (Python-first stack)
+# Tested with Python 3.10 / 3.11
+# ---------------------------------------------------------------------------
+
+# Kafka clients (Task B)
+confluent-kafka==2.5.3          # producers, consumers, AdminClient (librdkafka-backed)
+
+# Stream processing (Task C)
+apache-flink==1.20.0            # PyFlink DataStream + Table API (incident detection)
+pyspark==3.5.1                  # Spark Structured Streaming (ward analytics)
+
+# Data / utilities
+pandas==2.2.2                   # CSV reference tables, DLQ report aggregation
+tabulate==0.9.0                 # pretty console tables (lag + DLQ reports)
+python-dateutil==2.9.0.post0
+
+# NOTE:
+#   PySpark's Kafka source needs the spark-sql-kafka connector JAR, supplied at
+#   submit time via --packages (see scripts/run_spark_*.sh). No pip package for it.
+#   PyFlink bundles its own Kafka connector JAR download step (see infra/flink/).

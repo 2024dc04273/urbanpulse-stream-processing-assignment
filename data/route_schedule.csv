@@ -1,0 +1,21 @@
+route_id,route_name,terminal,scheduled_arrival_time,headway_min
+R001,Majestic - Electronic City Express,Electronic City Depot,08:15,10
+R002,Shivajinagar - Whitefield,Whitefield TTMC,08:20,12
+R003,KBS - Kengeri,Kengeri Satellite Town,08:05,8
+R004,Banashankari - Hebbal,Hebbal Depot,08:25,15
+R005,Jayanagar - Airport Feeder,Kempegowda Airport,08:10,20
+R006,Yeshwanthpur - Silk Board,Silk Board Junction,08:30,10
+R007,Vijayanagar - Marathahalli,Marathahalli Bridge,08:18,12
+R008,Malleshwaram - Sarjapur,Sarjapur Road Depot,08:22,14
+R009,Indiranagar - Peenya,Peenya Industrial,08:12,11
+R010,BTM Layout - ITPL,ITPL Main Gate,08:28,9
+R011,Rajajinagar - Bommanahalli,Bommanahalli TTMC,08:16,13
+R012,Basavanagudi - KR Puram,KR Puram Depot,08:24,12
+R013,Koramangala - Yelahanka,Yelahanka New Town,08:08,16
+R014,HSR Layout - Majestic,Kempegowda Bus Station,08:14,7
+R015,JP Nagar - Hoodi,Hoodi Circle,08:26,15
+R016,RT Nagar - Bannerghatta,Bannerghatta Depot,08:19,13
+R017,Cox Town - Electronic City,Electronic City Depot,08:21,11
+R018,Domlur - Nagawara,Nagawara Junction,08:11,10
+R019,Ulsoor - Kanakapura,Kanakapura Gate,08:27,18
+R020,Frazer Town - Hennur,Hennur Depot,08:23,12
