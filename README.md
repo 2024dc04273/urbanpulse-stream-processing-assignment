@@ -51,6 +51,23 @@ labelled diagram, storage-technology choices, and the Lambda-vs-Kappa analysis.
 
 ## Quick start
 
+### One-command end-to-end demo
+
+From the repository root, this starts the platform, creates topics, loads the
+route schedule, starts Kafka Streams/Flink/Spark, runs a bounded live-data and
+DLQ demonstration, and writes evidence logs under `logs/demo-<timestamp>/`.
+
+```bash
+bash scripts/run_demo.sh
+```
+
+It leaves the Docker services and Flink incident job running so they can be
+inspected in Kafka UI/Flink UI. Set `URBANPULSE_DEMO_DURATION=300` for the
+required five-minute DLQ collection period. Full details and individual
+commands are in [`docs/RUNBOOK.md`](docs/RUNBOOK.md).
+
+### Individual commands
+
 ```bash
 # 1. Start the 3-broker Kafka cluster + Kafka-UI + Python toolbox
 docker compose up -d
@@ -87,11 +104,13 @@ docker compose exec -e URBANPULSE_BUNCHING_SECONDS=45 flink-jobmanager \
 # Spark ward energy (Kafka + partitioned Parquet dual sink)
 docker compose --profile spark up -d
 docker compose exec spark spark-submit \
+    --conf "spark.jars.ivy=/tmp/ivy/ward_energy_demo" \
     --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1 \
     /opt/job/src/task_c_flink_spark/spark_ward_energy.py --duration 180
 
 # Spark health advisories (streaming SQL)
 docker compose exec spark spark-submit \
+    --conf "spark.jars.ivy=/tmp/ivy/health_advisory_demo" \
     --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1 \
     /opt/job/src/task_c_flink_spark/spark_health_advisory.py --duration 180
 ```
@@ -140,3 +159,7 @@ spa/
 
 See [`docs/SUBMISSION.md`](docs/SUBMISSION.md) for packaging and the video
 walkthrough outline.
+
+For a clean, reproducible end-to-end run — including the correct service start
+order, short demo windows, fresh Spark checkpoints and evidence commands — see
+[`docs/RUNBOOK.md`](docs/RUNBOOK.md).

@@ -89,8 +89,8 @@ parsed.withWatermark("event_time", "45 minutes")
            max("voltage")       .alias("peak_voltage"))
 ```
 
-**Dual sink** (both required, two independent streaming queries on the same
-aggregated DataFrame):
+**Dual sink** (both required, one checkpointed streaming query fans each
+finalised micro-batch to both sinks):
 
 1. **Kafka** → `urbanpulse.ward_energy_summary` (one JSON row per closed window).
 2. **Parquet** → `data/parquet/ward_energy`, **partitioned by `ward_id` and

@@ -281,9 +281,11 @@ def build_sink() -> KafkaSink:
 
 def main() -> None:
     env = StreamExecutionEnvironment.get_execution_environment()
-    jar = os.environ.get("FLINK_KAFKA_JAR")
-    if jar and os.path.exists(jar):
-        env.add_jars(f"file://{jar}")
+    # The Kafka connector is installed in /opt/flink/lib by infra/flink.Dockerfile,
+    # which puts it on the JobManager and TaskManager classpaths.  Do not call
+    # ``add_jars`` here: PyFlink 1.20 serialises that value as a Python list in
+    # ``pipeline.jars`` and Flink then rejects the literal "['file:/...']" as a
+    # malformed URL during submission.
     env.enable_checkpointing(30_000)   # recoverable keyed state every 30s
 
     # (a) AQI

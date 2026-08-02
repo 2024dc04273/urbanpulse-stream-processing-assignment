@@ -13,6 +13,10 @@ Dual sink (both required):
     2. Parquet → data/parquet/ward_energy, partitioned by (ward_id, date)
                  for historical trend analysis.
 
+A single checkpointed streaming query fans each completed micro-batch to both
+sinks. This is important: starting separate streaming queries from the same
+stateful aggregation can give each query a competing state store in local mode.
+
 Append output mode is used because a windowed aggregation with a watermark emits
 each window's final result once the watermark passes the window end — which is
 also the only mode the Parquet file sink supports.
@@ -102,31 +106,32 @@ def main() -> None:
     print(f"[ward-energy] window={args.window} watermark={args.watermark} "
           f"→ Kafka:{config.TOPIC_WARD_ENERGY} + Parquet:{args.parquet}")
 
-    # --- Sink 1: Kafka (append) ---
-    q_kafka = (out.select(col("ward_id").alias("key"), to_json(struct("*")).alias("value"))
-               .writeStream.format("kafka")
-               .option("kafka.bootstrap.servers", args.bootstrap)
-               .option("topic", config.TOPIC_WARD_ENERGY)
-               .option("checkpointLocation", args.checkpoint + "/kafka")
-               .outputMode("append").start())
+    def write_batch(batch, batch_id: int) -> None:
+        """Fan one finalised window batch out to every required sink."""
+        if batch.isEmpty():
+            return
+        (batch.select(col("ward_id").alias("key"), to_json(struct("*")).alias("value"))
+         .write.format("kafka")
+         .option("kafka.bootstrap.servers", args.bootstrap)
+         .option("topic", config.TOPIC_WARD_ENERGY)
+         .save())
+        (batch.withColumn("date", to_date("window_start"))
+         .write.mode("append").format("parquet")
+         .partitionBy("ward_id", "date")
+         .save(args.parquet))
+        print(f"[ward-energy] batch={batch_id} written to Kafka + Parquet")
+        batch.orderBy("ward_id", "window_start").show(20, truncate=False)
 
-    # --- Sink 2: Parquet partitioned by ward_id + date (append) ---
-    q_parquet = (out.withColumn("date", to_date("window_start"))
-                 .writeStream.format("parquet")
-                 .option("path", args.parquet)
-                 .option("checkpointLocation", args.checkpoint + "/parquet")
-                 .partitionBy("ward_id", "date")
-                 .outputMode("append").start())
-
-    # --- Sink 3: console (demo visibility) ---
-    q_console = (out.writeStream.format("console")
-                 .option("truncate", "false").option("numRows", "20")
-                 .outputMode("append").start())
+    # A single state store and checkpoint avoids competing state-store writers
+    # while the foreachBatch function writes the same finalised batch to both
+    # required sinks.
+    q = (out.writeStream.foreachBatch(write_batch)
+         .option("checkpointLocation", args.checkpoint)
+         .outputMode("append").start())
 
     if args.duration:
         spark.streams.awaitAnyTermination(args.duration)
-        for q in (q_kafka, q_parquet, q_console):
-            q.stop()
+        q.stop()
         print("[ward-energy] stopped after duration")
     else:
         spark.streams.awaitAnyTermination()

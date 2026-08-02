@@ -31,12 +31,14 @@ def main() -> None:
                     help="fixed collection window in seconds (0 = until idle)")
     ap.add_argument("--idle", type=float, default=5,
                     help="stop after this many seconds with no new DLQ records")
+    ap.add_argument("--from-latest", action="store_true",
+                    help="collect only DLQ events that arrive after this report starts")
     args = ap.parse_args()
 
     consumer = Consumer({
         "bootstrap.servers": args.bootstrap,
         "group.id": f"urbanpulse-dlq-report-{int(time.time())}",  # fresh read each run
-        "auto.offset.reset": "earliest",
+        "auto.offset.reset": "latest" if args.from_latest else "earliest",
         "enable.auto.commit": False,
     })
     consumer.subscribe([config.TOPIC_DLQ])

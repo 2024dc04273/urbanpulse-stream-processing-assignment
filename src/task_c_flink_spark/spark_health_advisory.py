@@ -94,7 +94,7 @@ def main() -> None:
                    round(avg(aqi), 1) AS rolling_avg_aqi,
                    count(*)          AS readings
             FROM air_quality
-            GROUP BY window(event_time, '{args.window}'), zone
+            GROUP BY window(event_time, '{args.window}', '{args.slide}'), zone
         )
         SELECT r.zone,
                z.zone_name,
