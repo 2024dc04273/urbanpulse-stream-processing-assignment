@@ -1,5 +1,7 @@
 # UrbanPulse — Real-Time Urban Operations Intelligence Platform
 
+# RECORDED - https://drive.google.com/file/d/15HaWreOC9Jdeqow74jo6Wk7GdH7WByi5/view?usp=sharing
+
 **DSE ZG556 / CC ZG556 — Stream Processing & Analytics · Situated Learning Assignment**
 Domain 3: Smart Cities & Urban Infrastructure · 75 marks
 
